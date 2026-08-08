@@ -1,7 +1,3 @@
-/* ============================================================
-   layout.css — шапка, секции, сетки
-   ============================================================ */
-
 .section {
   position: relative;
   padding: var(--pad-y) var(--pad-x);
@@ -14,7 +10,7 @@
   font-size: clamp(2rem, 5.5vw, 4.5rem);
 }
 
-/* ============ Шапка ============ */
+/* шапка */
 .header {
   position: fixed;
   inset: 0 0 auto;
@@ -24,7 +20,7 @@
   justify-content: space-between;
   gap: var(--gap);
   padding: 1.25rem var(--pad-x);
-  mix-blend-mode: difference;   /* читается и на светлом, и на тёмном */
+  mix-blend-mode: difference;
   pointer-events: none;
 }
 .header > * { pointer-events: auto; }
@@ -76,13 +72,11 @@
   .header__meta .header__status { display: none; }
 }
 
-/* ============ Герой ============ */
+/* герой */
 .hero {
   position: relative;
   min-height: 100svh;
-  /* Статичный градиент под канвасом: виден в первые миллисекунды до
-     первого кадра WebGL и остаётся единственным фоном там, где
-     шейдеры выключены (reduced-motion, старое железо). */
+  /* виден пока грузится webgl и там, где его нет */
   background:
     radial-gradient(80% 60% at 72% 28%, rgba(107, 75, 255, .30), transparent 65%),
     radial-gradient(60% 50% at 20% 75%, rgba(200, 255, 47, .06), transparent 70%);
@@ -92,7 +86,6 @@
   overflow: hidden;
 }
 
-/* WebGL-канвас лежит фоном на всю секцию */
 .hero__gl {
   position: absolute;
   inset: 0;
@@ -101,22 +94,13 @@
   z-index: 0;
 }
 
-/* Вуаль: гасит низ канваса, чтобы текст читался поверх любого кадра.
-   Центр радиального совпадает с композиционной точкой блоба (66%/30%),
-   а линейный градиент идёт тремя стопами: под заголовком фон полностью
-   плотный, в середине полупрозрачный, у блоба чистый. Один резкий стоп
-   давал бы видимую линию поперёк экрана. */
+/* затемнение под текстом, стопы подобраны по контрасту */
 .hero__veil {
   position: absolute;
   inset: 0;
   z-index: 1;
   background:
     radial-gradient(115% 85% at 72% 24%, transparent 38%, var(--bg) 100%),
-    /* Стопы подобраны по замеру, а не на глаз. Заголовок в одну строку
-       занимает 62–84% высоты (15–38% снизу), а габарит блоба кончается
-       на 49% высоты — пересечения нет, и держать плотную вуаль в середине
-       кадра больше не нужно. Ramp сдвинут под текст: там 0.74–0.99,
-       а блоб выше 34% высоты открыт почти полностью. */
     linear-gradient(to top,
       var(--bg) 12%,
       rgba(8, 7, 10, .85) 34%,
@@ -142,16 +126,9 @@
   text-transform: uppercase;
 }
 
-/* Заголовок в одну короткую строку, поэтому кегль можно поднять до 12vw.
-   Верхняя граница 11rem и нижняя 3rem держат его в одной строке на всех
-   ширинах: перенос внутри маски split-line дал бы кашу. */
 .hero__title {
-  /* Минимум 2.6rem, а не 3rem: на 320px ширина падает до 280px, и при
-     48px «Делаю сайты» вылезало за padding — clamp ниже 3rem не опускался. */
+  /* минимум 2.6rem, иначе на 320px строка не влезает */
   font-size: clamp(2.6rem, 12vw, 11rem);
-  /* Страховка легибельности: крупный текст всё равно частично идёт
-     поверх блоба, а мягкая тёмная подложка гарантирует контраст
-     независимо от того, какой кадр шейдера окажется под буквами. */
   text-shadow: 0 2px 44px rgba(8, 7, 10, .6);
 }
 .hero__title .line { display: block; }
@@ -192,7 +169,7 @@
   .hero__foot { flex-direction: column; align-items: flex-start; }
 }
 
-/* ============ Бегущая строка ============ */
+/* бегущая строка */
 .marquee {
   position: relative;
   z-index: 2;
@@ -218,7 +195,7 @@
 }
 .marquee__group i { color: var(--acc); font-style: normal; font-size: .5em; }
 
-/* ============ Обо мне ============ */
+/* что делаю */
 .about__grid {
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
@@ -248,7 +225,6 @@
 
 .about__text { display: grid; gap: clamp(1.5rem, 4vh, 3rem); }
 
-/* Крупный «читаемый по скроллу» абзац: слова проявляются по одному */
 .scrub-text {
   font-size: clamp(1.25rem, 1rem + 1.4vw, 2.15rem);
   line-height: 1.28;
@@ -288,14 +264,13 @@
   .about__portrait { max-width: 22rem; }
 }
 
-/* ============ Работы: горизонтальный скролл ============ */
+/* работы */
 .works {
   position: relative;
   padding-block: var(--pad-y) 0;
 }
 
-/* Для пиннинга секция должна быть ровно в экран: ScrollTrigger
-   фиксирует её целиком, и любая лишняя высота даёт «прыжок» на входе. */
+/* ровно в экран, иначе пиннинг прыгает на входе */
 @media (min-width: 861px) and (hover: hover) {
   .works {
     height: 100svh;
@@ -321,7 +296,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Вьюпорт пиннится, а трек внутри едет по X — классическая связка */
 .works__viewport { overflow: hidden; }
 
 .works__track {
@@ -332,9 +306,7 @@
   will-change: transform;
 }
 
-/* Третье ограничение — по высоте экрана. Карточка = обложка 4:3 плюс
-   текст, и на низком ноутбуке без vh-потолка она вылезает за пределы
-   запиненной секции. */
+/* 78vh — чтобы карточка не вылезала из запиненной секции на низком экране */
 .work {
   flex: 0 0 auto;
   width: min(80vw, 40rem, 78vh);
@@ -390,8 +362,7 @@
   color: var(--muted);
 }
 
-/* На тач-устройствах пиннинг заменяем нативным свайпом:
-   надёжнее, привычнее и не ломает адресную строку браузера. */
+/* на телефоне вместо пиннинга обычный свайп */
 @media (max-width: 860px), (hover: none) {
   .works__viewport {
     overflow-x: auto;
@@ -404,7 +375,7 @@
   .work { scroll-snap-align: center; width: 82vw; }
 }
 
-/* ============ Стек: строки-таблица ============ */
+/* список приёмов */
 .rows { border-top: 1px solid var(--line); }
 
 .row {
@@ -416,10 +387,7 @@
   border-bottom: 1px solid var(--line);
 }
 
-/* Сдвигаем ЯЧЕЙКИ трансформом, а не строку паддингом.
-   padding-left у грида с fr-колонками менял бы их ширину, и описание
-   перевёрстывалось бы на каждом наведении — заметный дребезг.
-   transform не влияет на раскладку вообще. */
+/* двигаем ячейки, а не padding строки: иначе fr-колонки перевёрстываются */
 .row > * {
   transition: transform .55s var(--ease), color .4s var(--ease),
               border-color .4s var(--ease);
@@ -452,7 +420,7 @@
   .row__tech { grid-column: 2; justify-self: start; }
 }
 
-/* ============ Контакты ============ */
+/* контакты */
 .contact {
   display: grid;
   gap: clamp(1.5rem, 4vh, 3rem);
@@ -463,8 +431,6 @@
 .contact__title { font-size: clamp(2.2rem, 8vw, 7rem); }
 .contact__title .line { display: block; }
 
-/* Телефон и почта стоят парой, поэтому у них свой контейнер с плотным
-   шагом: gap самой секции (36px) разрывал бы их на два отдельных блока. */
 .contact__direct {
   display: grid;
   gap: .35rem;
@@ -479,7 +445,6 @@
   letter-spacing: -.02em;
   word-break: break-word;
 }
-/* Подчёркивание, растущее от левого края */
 .contact__mail::after {
   content: '';
   position: absolute;
@@ -502,7 +467,7 @@
   text-transform: uppercase;
 }
 
-/* ============ Подвал ============ */
+/* подвал */
 .footer {
   display: flex;
   flex-wrap: wrap;

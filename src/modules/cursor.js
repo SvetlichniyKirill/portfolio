@@ -1,13 +1,3 @@
-/* ============================================================
-   cursor.js — свой курсор и магнитные элементы
-
-   Почему это работает: точка догоняет мышь быстро (0.35),
-   кольцо медленно (0.13). Разница скоростей читается как масса.
-   Один общий коэффициент выглядел бы как сломанная задержка.
-
-   Включается только при настоящей мыши: на тач-устройстве курсора
-   нет, а cursor:none на body сломал бы выделение текста.
-   ============================================================ */
 import { gsap } from '../lib/gsap.js';
 import { hasMouse, reducedMotion, lerp } from '../lib/env.js';
 
@@ -33,8 +23,8 @@ export function initCursor() {
     mouse.y = e.clientY;
   }, { passive: true });
 
-  // Курсор живёт в общем тикере GSAP — свой rAF был бы третьим циклом
   gsap.ticker.add(() => {
+    // точка догоняет быстро, кольцо медленно — из этой разницы и берётся вес
     fast.x = lerp(fast.x, mouse.x, 0.35);
     fast.y = lerp(fast.y, mouse.y, 0.35);
     slow.x = lerp(slow.x, mouse.x, 0.13);
@@ -57,16 +47,12 @@ export function initCursor() {
     });
   });
 
-  // Курсор скрывается, когда мышь уходит из окна
   document.addEventListener('mouseleave', () => gsap.to(root, { autoAlpha: 0, duration: 0.3 }));
   document.addEventListener('mouseenter', () => gsap.to(root, { autoAlpha: 1, duration: 0.3 }));
 
   initMagnets();
 }
 
-/* ---------- Магнитные элементы ----------
-   Кнопка тянется к курсору на четверть расстояния, а возвращается
-   с упругостью. Мелочь, но именно такие мелочи и запоминаются. */
 function initMagnets() {
   document.querySelectorAll('[data-magnet]').forEach((el) => {
     const strength = Number(el.dataset.magnet) || 0.22;

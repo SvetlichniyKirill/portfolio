@@ -1,7 +1,3 @@
-/* ============================================================
-   ui.js — мелочи, из которых складывается «живость»
-   Часы, год, роллинг-ссылки, прячущаяся шапка.
-   ============================================================ */
 import { gsap, ScrollTrigger } from '../lib/gsap.js';
 import { reducedMotion } from '../lib/env.js';
 
@@ -12,8 +8,6 @@ export function initUI() {
   initHeader();
 }
 
-/* ---------- Часы ----------
-   Признак «сайт сделан человеком, а не собран из блоков». */
 function initClock() {
   const el = document.getElementById('clock');
   if (!el) return;
@@ -33,16 +27,13 @@ function initYear() {
   if (el) el.textContent = String(new Date().getFullYear());
 }
 
-/* ---------- Роллинг-ссылки ----------
-   CSS умеет всё, кроме одного: ему нужен текст клона.
-   Отдаём его через data-text, а рисует уже ::after. */
+// ::after рисует копию текста, но content нужно откуда-то взять
 function initRollLinks() {
   document.querySelectorAll('a[data-cursor="link"]').forEach((a) => {
     if (a.classList.contains('btn')) return;
 
     const kids = Array.from(a.children);
     const span = kids.length === 1 && kids[0].tagName === 'SPAN' ? kids[0] : null;
-    // Только простой случай «одна ссылка — один безклассовый span»
     if (!span || span.className) return;
 
     a.classList.add('roll');
@@ -50,9 +41,6 @@ function initRollLinks() {
   });
 }
 
-/* ---------- Шапка прячется при движении вниз ----------
-   Экран освобождается под контент, но навигация всегда в одном
-   движении мыши вверх. */
 function initHeader() {
   const header = document.getElementById('header');
   if (!header || reducedMotion) return;

@@ -1,17 +1,3 @@
-/* ============================================================
-   image-plane.js — WebGL-искажение картинок
-
-   Здесь важна архитектурная развилка. Обычно «жидкие» галереи делают
-   одним канвасом на весь экран и вручную синхронизируют позиции DOM
-   и плоскостей. Это красиво в демо и мучительно в жизни: пиннинг,
-   ресайз и transform родителя ломают синхронизацию.
-
-   Поэтому у каждой карточки свой маленький канвас внутри неё.
-   Позицию считает браузер, шейдер знает только свой прямоугольник.
-   Работает внутри горизонтального трека без единой правки.
-
-   Геометрия — Triangle: один треугольник на весь клип, дешевле квада.
-   ============================================================ */
 import { Renderer, Program, Mesh, Triangle, Texture, Vec2 } from 'ogl';
 import { gsap } from '../lib/gsap.js';
 import { dpr, hasMouse } from '../lib/env.js';
@@ -32,17 +18,17 @@ const fragment = /* glsl */ `
 precision highp float;
 
 uniform sampler2D tMap;
-uniform vec2  uRes;      // размер канваса в пикселях
-uniform vec2  uSize;     // размер картинки
-uniform vec2  uPointer;   // курсор в локальных 0..1
-uniform float uHover;     // 0..1, ведёт gsap
+uniform vec2  uRes;
+uniform vec2  uSize;
+uniform vec2  uPointer;
+uniform float uHover;
 uniform float uTime;
-uniform float uVel;       // нормированная скорость скролла
+uniform float uVel;
 
 varying vec2 vUv;
 
 void main() {
-  // --- cover-подгонка: картинка кадрируется, а не растягивается
+  // cover-подгонка, чтобы картинку не растянуло
   vec2 ratio = vec2(
     min((uRes.x / uRes.y) / (uSize.x / uSize.y), 1.0),
     min((uRes.y / uRes.x) / (uSize.y / uSize.x), 1.0)
@@ -52,33 +38,27 @@ void main() {
     vUv.y * ratio.y + (1.0 - ratio.y) * 0.5
   );
 
-  // --- постоянный медленный дрейф: карточка «дышит» даже без мыши
   uv.x += sin(uv.y * 6.0 + uTime * 0.5) * 0.0035;
   uv.y += cos(uv.x * 5.0 - uTime * 0.4) * 0.0030;
 
-  // --- рябь от курсора: волна расходится кругами от точки наведения
   float d = distance(vUv, uPointer);
   vec2 dir = normalize(vUv - uPointer + vec2(0.0001));
   uv += dir * sin(d * 16.0 - uTime * 2.6) * 0.024 * uHover * smoothstep(0.75, 0.0, d);
 
-  // --- лёгкий зум внутрь: подтверждает наведение физически
   uv = (uv - 0.5) * (1.0 - 0.05 * uHover) + 0.5;
 
-  // --- хроматическая аберрация: от наведения и от скорости скролла
   float ab = 0.005 * uHover + abs(uVel) * 0.004;
   vec3 col;
   col.r = texture2D(tMap, uv + vec2(ab, 0.0)).r;
   col.g = texture2D(tMap, uv).g;
   col.b = texture2D(tMap, uv - vec2(ab, 0.0)).b;
 
-  // --- лёгкое осветление под курсором вместо CSS-оверлея
   col += uHover * smoothstep(0.55, 0.0, d) * 0.06;
 
   gl_FragColor = vec4(col, 1.0);
 }
 `;
 
-/** Fallback без WebGL: рисуем ту же обложку обычным 2D-контекстом. */
 export function paintStatic(canvasEl, cover) {
   const ctx = canvasEl.getContext('2d');
   if (!ctx) return;
@@ -88,17 +68,12 @@ export function paintStatic(canvasEl, cover) {
   canvasEl.width = Math.round(w * dpr());
   canvasEl.height = Math.round(h * dpr());
 
-  // cover-кадрирование руками
   const scale = Math.max(canvasEl.width / cover.width, canvasEl.height / cover.height);
   const dw = cover.width * scale;
   const dh = cover.height * scale;
   ctx.drawImage(cover, (canvasEl.width - dw) / 2, (canvasEl.height - dh) / 2, dw, dh);
 }
 
-/**
- * @param {HTMLCanvasElement} canvasEl
- * @param {{hue?:number, label?:string, seed?:number, interactive?:boolean, src?:string}} opts
- */
 export function createImagePlane(canvasEl, opts = {}) {
   const { hue = 88, label = '', seed = 7, interactive = true, src = null } = opts;
 
@@ -118,7 +93,7 @@ export function createImagePlane(canvasEl, opts = {}) {
   texture.image = cover;
   const size = new Vec2(cover.width, cover.height);
 
-  // Если положили реальный скриншот — он молча заменяет процедурную обложку
+  // если у канваса есть data-src, скриншот заменит нарисованную обложку
   if (src) {
     const img = new Image();
     img.crossOrigin = 'anonymous';
@@ -147,9 +122,6 @@ export function createImagePlane(canvasEl, opts = {}) {
 
   const mesh = new Mesh(gl, { geometry: new Triangle(gl), program });
 
-  /* ---------- Размеры ----------
-     Источник истины — родитель. Сам канвас спрашивать нельзя: OGL пишет
-     ему инлайновые px, и замер вернёт 300×150 из своего же конструктора. */
   const box = canvasEl.parentElement;
   const resize = () => {
     const w = box?.clientWidth || 0;
@@ -165,7 +137,6 @@ export function createImagePlane(canvasEl, opts = {}) {
   resize();
   if (box) new ResizeObserver(resize).observe(box);
 
-  /* ---------- Наведение ---------- */
   const host = canvasEl.closest('.work') || canvasEl.parentElement;
   const state = { hover: 0 };
 
@@ -181,13 +152,11 @@ export function createImagePlane(canvasEl, opts = {}) {
       if (!b.width || !b.height) return;
       program.uniforms.uPointer.value.set(
         (e.clientX - b.left) / b.width,
-        // UV в WebGL растут вверх, у DOM — вниз
-        1 - (e.clientY - b.top) / b.height
+        1 - (e.clientY - b.top) / b.height   // y в webgl снизу вверх
       );
     }, { passive: true });
   }
 
-  /* ---------- Рендер только когда карточка видна ---------- */
   let visible = false;
   new IntersectionObserver(
     ([entry]) => { visible = entry.isIntersecting; },
@@ -195,15 +164,13 @@ export function createImagePlane(canvasEl, opts = {}) {
   ).observe(canvasEl);
 
   let velSmooth = 0;
-  // Сдвиг фазы: иначе все карточки «дышат» синхронно и это выдаёт трюк
-  const phase = Math.random() * 40;
+  const phase = Math.random() * 40;   // чтобы карточки не дышали в такт
 
   const tick = (time) => {
     if (!visible) return;
     program.uniforms.uTime.value = time + phase;
     program.uniforms.uHover.value = state.hover;
 
-    // Скорость сглаживаем: сырое значение Lenis дёргается
     velSmooth += (scrollState.velocity * 0.05 - velSmooth) * 0.1;
     program.uniforms.uVel.value = gsap.utils.clamp(-1, 1, velSmooth);
 
@@ -211,9 +178,6 @@ export function createImagePlane(canvasEl, opts = {}) {
   };
 
   gsap.ticker.add(tick);
-
-  // Первый кадр сразу, чтобы не мигнуть пустотой до появления в вьюпорте
-  program.uniforms.uHover.value = 0;
   renderer.render({ scene: mesh });
 
   return { resize, destroy: () => gsap.ticker.remove(tick) };

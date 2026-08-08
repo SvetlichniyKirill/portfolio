@@ -1,14 +1,3 @@
-/* ============================================================
-   reveals.js — появление по скроллу
-
-   Три разных приёма, а не один на всё:
-   · once-ревил   — быстрый вход блока (карточки, факты, строки)
-   · scrub-слова  — абзац «читается» по мере прокрутки
-   · параллакс    — разная скорость слоёв даёт глубину
-
-   Стартовое состояние ставит JS, а не CSS: если скрипт не загрузился,
-   контент остаётся видимым, а не пропадает навсегда.
-   ============================================================ */
 import { gsap, ScrollTrigger } from '../lib/gsap.js';
 import { splitChars, splitLines, splitWords } from '../lib/split.js';
 import { reducedMotion } from '../lib/env.js';
@@ -24,7 +13,6 @@ export function initReveals() {
   initParallax();
 }
 
-/* ---------- Заголовки секций: построчно из-под маски ---------- */
 function revealLineTitles() {
   document.querySelectorAll('[data-split="lines"]').forEach((el) => {
     const lines = splitLines(el);
@@ -40,9 +28,8 @@ function revealLineTitles() {
   });
 }
 
-/* ---------- Заголовок контактов: по символам ---------- */
 function revealCharTitles() {
-  // Герой обрабатывается в intro.js — там свой тайминг
+  // герой не трогаем, у него свой тайминг в intro.js
   document.querySelectorAll('[data-split="chars"]:not(.hero__title)').forEach((el) => {
     const chars = splitChars(el);
     if (!chars.length) return;
@@ -57,10 +44,6 @@ function revealCharTitles() {
   });
 }
 
-/* ---------- Абзац проявляется словами ----------
-   Тот самый приём с «читающимся» текстом. Секрет в scrub: прогресс
-   анимации жёстко привязан к позиции скролла, поэтому кажется,
-   что текст загорается ровно под взглядом. */
 function revealScrubWords() {
   document.querySelectorAll('[data-reveal="words"]').forEach((el) => {
     const words = splitWords(el);
@@ -73,14 +56,11 @@ function revealScrubWords() {
         opacity: 1,
         ease: 'none',
         duration: 1,
-        stagger: 1,          // окна слов идут друг за другом без наложения
+        stagger: 1,
         scrollTrigger: {
           trigger: el,
           start: 'top 78%',
-          // Фиксированное окно в 70% экрана, а не 'bottom 55%'. Привязка к
-          // концу элемента давала на двухстрочном абзаце ~300px прокрутки
-          // на 28 слов — по 11px на слово, слова просто мигали.
-          end: '+=70%',
+          end: '+=70%',   // от конца абзаца окно выходит слишком коротким
           scrub: true,
         },
       }
@@ -88,9 +68,6 @@ function revealScrubWords() {
   });
 }
 
-/* ---------- Групповой ревил ----------
-   Для элементов, стоящих в строку: отдельный триггер на каждом сработал бы
-   одновременно, и стаггер бы не читался. Триггер один — на контейнере. */
 function revealGroups() {
   document.querySelectorAll('[data-reveal="group"]').forEach((el) => {
     const kids = Array.from(el.children);
@@ -110,7 +87,6 @@ function revealGroups() {
   });
 }
 
-/* ---------- Простой ревил блоков ---------- */
 function revealBlocks() {
   const blocks = Array.from(document.querySelectorAll('[data-reveal]')).filter(
     (el) => !el.dataset.reveal
@@ -130,8 +106,6 @@ function revealBlocks() {
   });
 }
 
-/* ---------- Параллакс ----------
-   data-parallax="40" → слой едет с 40px до -40px за проход секции. */
 function initParallax() {
   document.querySelectorAll('[data-parallax]').forEach((el) => {
     const amp = Number(el.dataset.parallax) || 40;
@@ -154,14 +128,11 @@ function initParallax() {
   });
 }
 
-/* ---------- Индикатор прогресса чтения ---------- */
 export function initProgress() {
   const bar = document.getElementById('progress-bar');
   if (!bar) return;
 
-  // Без trigger и с числовыми границами. Через trigger:documentElement
-  // не работает: его высота измеряется как высота вьюпорта, диапазон
-  // получается нулевым и полоса стоит на месте.
+  // с trigger:documentElement диапазон получается нулевой, поэтому числами
   gsap.to(bar, {
     scaleX: 1,
     ease: 'none',
@@ -173,6 +144,5 @@ export function initProgress() {
     },
   });
 
-  // Пересчёт после подгрузки шрифтов: высоты секций меняются
   document.fonts?.ready.then(() => ScrollTrigger.refresh());
 }

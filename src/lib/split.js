@@ -1,21 +1,11 @@
-/* ============================================================
-   split.js — резка текста на строки / слова / символы
+// Режет текст на строки / слова / символы для анимаций из-под маски.
+// Фраза целиком уходит в aria-label, осколки прячем от скринридера.
 
-   Зачем своё, а не SplitText: нужен ровно один приём — обёртка
-   в маску, и это 60 строк. Заодно нет зависимости от платного плагина.
-
-   Доступность: исходная фраза уезжает в aria-label, а осколки
-   помечаются aria-hidden — скринридер читает предложение целиком,
-   а не «Д е л а ю».
-   ============================================================ */
-
-/** Рекурсивно оборачивает символы, не теряя вложенные теги вроде <em>. */
 function wrapChars(node, out) {
   for (const kid of Array.from(node.childNodes)) {
     if (kid.nodeType === Node.TEXT_NODE) {
       const frag = document.createDocumentFragment();
 
-      // for..of по строке идёт по code points — кириллица и эмодзи целы
       for (const ch of kid.textContent) {
         if (ch === ' ' || ch === '\n' || ch === '\t') {
           const space = document.createElement('span');
@@ -39,11 +29,7 @@ function wrapChars(node, out) {
   }
 }
 
-/**
- * Режет заголовок на символы. Маска ставится на строку, не на символ:
- * per-char overflow обрезал бы хвосты у «у», «р», «ф».
- * @returns {HTMLElement[]} символы в порядке чтения
- */
+// маска висит на строке, а не на символе — иначе режет хвосты у «у» и «ц»
 export function splitChars(el) {
   if (el.dataset.splitDone) return [];
 
@@ -62,10 +48,6 @@ export function splitChars(el) {
   return chars;
 }
 
-/**
- * Режет по <br> на строки в масках. Возвращает внутренние слои —
- * именно они двигаются, внешние работают шторкой.
- */
 export function splitLines(el) {
   if (el.dataset.splitDone) return [];
 
@@ -87,7 +69,6 @@ export function splitLines(el) {
   return Array.from(el.querySelectorAll('.split-line__inner'));
 }
 
-/** Режет абзац на слова — для построчного проявления по скроллу. */
 export function splitWords(el) {
   if (el.dataset.splitDone) return [];
 
@@ -100,7 +81,6 @@ export function splitWords(el) {
     span.className = 'word';
     span.textContent = w;
     el.appendChild(span);
-    // пробел отдельным текстовым узлом: перенос строк остаётся естественным
     if (i < words.length - 1) el.appendChild(document.createTextNode(' '));
     out.push(span);
   });

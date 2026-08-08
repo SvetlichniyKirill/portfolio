@@ -1,6 +1,4 @@
-/* Симплексный шум 3D (Ashima Arts / Stefan Gustavson, MIT).
-   Стандартный кусок GLSL, который вставляют почти в любой шейдер:
-   даёт органичное «дыхание» вместо машинных синусов. */
+// simplex noise 3D, Ashima Arts / Stefan Gustavson, MIT
 export const snoise3 = /* glsl */ `
 vec3 mod289(vec3 x){ return x - floor(x * (1.0 / 289.0)) * 289.0; }
 vec4 mod289(vec4 x){ return x - floor(x * (1.0 / 289.0)) * 289.0; }

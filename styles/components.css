@@ -1,8 +1,4 @@
-/* ============================================================
-   components.css — прелоадер, занавес, курсор, зерно, кнопки
-   ============================================================ */
-
-/* ============ Прелоадер ============ */
+/* прелоадер */
 .preloader {
   position: fixed;
   inset: 0;
@@ -50,9 +46,7 @@ body:not(.is-loading) .preloader { pointer-events: none; }
   transform-origin: left;
 }
 
-/* ============ Занавес интро ============
-   Пять вертикальных полос уезжают вверх с лёгким стаггером.
-   Дешёвый приём, а вход в сайт сразу читается как кинематографичный. */
+/* занавес */
 .curtain {
   position: fixed;
   inset: 0;
@@ -67,7 +61,7 @@ body:not(.is-loading) .preloader { pointer-events: none; }
 }
 .curtain.is-done { display: none; }
 
-/* ============ Зерно ============ */
+/* зерно */
 .grain {
   position: fixed;
   inset: -50%;
@@ -79,7 +73,6 @@ body:not(.is-loading) .preloader { pointer-events: none; }
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grain 1s steps(6) infinite;
 }
-/* Скачки по кадрам, а не плавный сдвиг — так шум читается «плёночным» */
 @keyframes grain {
   0%   { transform: translate(0, 0); }
   17%  { transform: translate(-3%, -2%); }
@@ -90,7 +83,7 @@ body:not(.is-loading) .preloader { pointer-events: none; }
   100% { transform: translate(0, 0); }
 }
 
-/* ============ Индикатор прогресса ============ */
+/* полоска прогресса */
 .progress {
   position: fixed;
   inset: 0 0 auto;
@@ -106,9 +99,7 @@ body:not(.is-loading) .preloader { pointer-events: none; }
   transform-origin: left;
 }
 
-/* ============ Кастомный курсор ============
-   Две части с разной инерцией: точка почти догоняет мышь,
-   кольцо отстаёт. Разница скоростей и создаёт «вес». */
+/* курсор */
 .cursor {
   position: fixed;
   top: 0; left: 0;
@@ -147,7 +138,6 @@ body:not(.is-loading) .preloader { pointer-events: none; }
   transition: opacity .3s var(--ease);
 }
 
-/* Наведение на ссылку — кольцо подрастает */
 .cursor.is-link .cursor__ring {
   width: 60px; height: 60px;
   margin: -30px 0 0 -30px;
@@ -156,7 +146,6 @@ body:not(.is-loading) .preloader { pointer-events: none; }
 }
 .cursor.is-link .cursor__dot { opacity: 0; }
 
-/* Наведение на работу — кольцо с подписью «view» */
 .cursor.is-view .cursor__ring {
   width: 88px; height: 88px;
   margin: -44px 0 0 -44px;
@@ -166,16 +155,13 @@ body:not(.is-loading) .preloader { pointer-events: none; }
 .cursor.is-view .cursor__ring span { opacity: 1; }
 .cursor.is-view .cursor__dot { opacity: 0; }
 
-/* Свой курсор имеет смысл только там, где есть настоящая мышь */
 @media (hover: none), (pointer: coarse) {
   .cursor { display: none; }
 }
 body.has-cursor { cursor: none; }
 body.has-cursor a, body.has-cursor button { cursor: none; }
 
-/* ============ Роллинг-ссылки ============
-   Текст уезжает вверх, его клон приезжает снизу.
-   Клон берётся из data-text, который проставляет JS. */
+/* ссылки: текст уезжает вверх, копия из data-text приезжает снизу */
 .roll {
   position: relative;
   display: inline-block;
@@ -198,7 +184,7 @@ body.has-cursor a, body.has-cursor button { cursor: none; }
 .roll:hover > span { transform: translateY(-105%); }
 .roll:hover::after { transform: translateY(0); }
 
-/* ============ Кнопка ============ */
+/* кнопка */
 .btn {
   --btn-pad: .85rem 1.6rem;
   position: relative;
@@ -217,7 +203,6 @@ body.has-cursor a, body.has-cursor button { cursor: none; }
   isolation: isolate;
   will-change: transform;
 }
-/* Заливка выезжает снизу и уводит текст в инверсию */
 .btn::before {
   content: '';
   position: absolute;
@@ -231,7 +216,4 @@ body.has-cursor a, body.has-cursor button { cursor: none; }
 .btn:hover::before { transform: translateY(0); }
 .btn > span { position: relative; }
 
-/* ============ Появление по скроллу ============
-   Стартовое состояние ставит JS (чтобы без JS контент был видим),
-   а здесь только подсказка браузеру. */
 [data-reveal] { will-change: transform, opacity; }

@@ -1,16 +1,6 @@
-/* ============================================================
-   cover.js — процедурные обложки проектов
+// Обложки проектов рисуются тут, пока нет нормальных скриншотов.
+// Появятся — добавить data-src="images/имя.jpg" на нужный canvas.
 
-   Скриншотов пока нет, а плейсхолдеры с «placeholder.com» убивают
-   весь премиум. Поэтому обложки рисуются на canvas: mesh-градиент,
-   сетка, кольца, зерно. Выглядит как осознанная графика, весит ноль
-   и не тянет ни одного сетевого запроса.
-
-   Когда появятся реальные скриншоты — положи их в images/ и добавь
-   data-src="images/foo.jpg" на <canvas>. Шейдер тот же.
-   ============================================================ */
-
-/** Детерминированный PRNG: одинаковый seed — одинаковая картинка. */
 function mulberry32(seed) {
   let a = seed >>> 0;
   return () => {
@@ -28,14 +18,12 @@ export function makeCover({ width = 1000, height = 750, hue = 88, label = '', se
   const ctx = canvas.getContext('2d');
   const rnd = mulberry32(seed);
 
-  // --- 1. Тёмная база в тон акценту, а не нейтрально-серая
   ctx.fillStyle = `hsl(${hue - 10} 18% 7%)`;
   ctx.fillRect(0, 0, width, height);
 
-  // --- 2. Mesh-градиент: несколько мягких пятен в режиме сложения
+  // мягкие цветные пятна в режиме сложения
   ctx.globalCompositeOperation = 'lighter';
-  const blobs = 5;
-  for (let i = 0; i < blobs; i++) {
+  for (let i = 0; i < 5; i++) {
     const x = rnd() * width;
     const y = rnd() * height;
     const r = (0.28 + rnd() * 0.42) * width;
@@ -51,7 +39,6 @@ export function makeCover({ width = 1000, height = 750, hue = 88, label = '', se
   }
   ctx.globalCompositeOperation = 'source-over';
 
-  // --- 3. Техническая сетка: даёт «чертёжный» слой поверх мягкого градиента
   ctx.strokeStyle = 'rgba(255,255,255,.055)';
   ctx.lineWidth = 1;
   const step = width / 16;
@@ -66,7 +53,6 @@ export function makeCover({ width = 1000, height = 750, hue = 88, label = '', se
   }
   ctx.stroke();
 
-  // --- 4. Пара концентрических кругов — графический акцент
   ctx.strokeStyle = 'rgba(255,255,255,.14)';
   const cx = width * (0.25 + rnd() * 0.5);
   const cy = height * (0.25 + rnd() * 0.5);
@@ -76,7 +62,6 @@ export function makeCover({ width = 1000, height = 750, hue = 88, label = '', se
     ctx.stroke();
   }
 
-  // --- 5. Подпись моноширинным: шейдер её потом красиво поведёт
   if (label) {
     ctx.fillStyle = 'rgba(255,255,255,.85)';
     ctx.font = `500 ${Math.round(width * 0.035)}px "JetBrains Mono", monospace`;
@@ -84,7 +69,6 @@ export function makeCover({ width = 1000, height = 750, hue = 88, label = '', se
     ctx.fillText(label.toUpperCase(), width * 0.06, height * 0.92);
   }
 
-  // --- 6. Затемнение по краям
   const vig = ctx.createRadialGradient(
     width / 2, height / 2, Math.min(width, height) * 0.2,
     width / 2, height / 2, Math.max(width, height) * 0.75
@@ -94,7 +78,7 @@ export function makeCover({ width = 1000, height = 750, hue = 88, label = '', se
   ctx.fillStyle = vig;
   ctx.fillRect(0, 0, width, height);
 
-  // --- 7. Зерно попиксельно: убирает «пластиковость» градиента
+  // зерно, иначе градиент выглядит пластиковым
   const img = ctx.getImageData(0, 0, width, height);
   const d = img.data;
   for (let i = 0; i < d.length; i += 4) {

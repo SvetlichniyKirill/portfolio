@@ -15,9 +15,7 @@
 <link rel="stylesheet" href="styles/layout.css">
 <link rel="stylesheet" href="styles/components.css">
 
-<!-- Карта импортов: подменяет сборщик. Код ниже пишется так же, как под Vite
-     (import gsap from 'gsap'), но модули приходят с CDN.
-     Переход на Vite = удалить этот блок + npm install gsap lenis ogl. -->
+<!-- вместо сборщика: импорты обычные, модули с cdn -->
 <script type="importmap">
 {
   "imports": {
@@ -33,7 +31,6 @@
 
 <body class="is-loading">
 
-<!-- ============ Прелоадер ============ -->
 <div class="preloader" id="preloader" aria-hidden="true">
   <div class="preloader__inner">
     <span class="preloader__label">загрузка</span>
@@ -42,12 +39,10 @@
   <div class="preloader__bar"><i id="preloader-bar"></i></div>
 </div>
 
-<!-- ============ Занавес для интро ============ -->
 <div class="curtain" id="curtain" aria-hidden="true">
   <i></i><i></i><i></i><i></i><i></i>
 </div>
 
-<!-- ============ Глобальные слои ============ -->
 <div class="grain" aria-hidden="true"></div>
 <div class="progress" aria-hidden="true"><i id="progress-bar"></i></div>
 <div class="cursor" id="cursor" aria-hidden="true">
@@ -55,7 +50,6 @@
   <div class="cursor__dot" id="cursor-dot"></div>
 </div>
 
-<!-- ============ Шапка ============ -->
 <header class="header" id="header">
   <a class="header__logo" href="#top" data-cursor="link">
     КС<span class="header__logo-dot"></span>
@@ -73,7 +67,6 @@
 
 <main id="top">
 
-  <!-- ============ ГЕРОЙ ============ -->
   <section class="hero" id="hero">
     <canvas class="hero__gl" id="hero-gl" aria-hidden="true"></canvas>
     <div class="hero__veil" aria-hidden="true"></div>
@@ -104,7 +97,6 @@
     </div>
   </section>
 
-  <!-- ============ БЕГУЩАЯ СТРОКА ============ -->
   <section class="marquee" id="marquee" aria-hidden="true">
     <div class="marquee__track" id="marquee-track">
       <div class="marquee__group">
@@ -114,7 +106,6 @@
     </div>
   </section>
 
-  <!-- ============ ОБО МНЕ ============ -->
   <section class="about section" id="about">
     <div class="section__head">
       <span class="tag">01 — что делаю</span>
@@ -140,8 +131,7 @@
           Нужно что-то поменять — пишите, поправлю.
         </p>
 
-        <!-- group, а не reveal на каждом li: элементы стоят в строку и
-             сработали бы одновременно, то есть без стаггера вообще -->
+        <!-- триггер один на список, иначе все три сработают разом -->
         <ul class="about__facts" data-reveal="group">
           <li><b>3</b><span>проекта сделано</span></li>
           <li><b>2</b><span>сайта уже работают</span></li>
@@ -151,7 +141,6 @@
     </div>
   </section>
 
-  <!-- ============ РАБОТЫ (горизонтальный скролл) ============ -->
   <section class="works" id="works">
     <div class="works__head">
       <span class="tag">02 — работы</span>
@@ -183,9 +172,7 @@
           </div>
         </article>
 
-        <!-- У бота нет веб-страницы, поэтому обложка не ссылка и курсор не
-             обещает переход. Раньше здесь стоял href="#works" — клик
-             «срабатывал», но никуда не вёл, и это читалось как поломка. -->
+        <!-- у бота нет страницы, поэтому обложка не ссылка -->
         <article class="work" data-hue="265">
           <div class="work__media">
             <canvas class="work__gl" data-gl-work aria-hidden="true"></canvas>
@@ -212,7 +199,6 @@
     </div>
   </section>
 
-  <!-- ============ СТЕК ============ -->
   <section class="stack section" id="stack">
     <div class="section__head">
       <span class="tag">03 — как это сделано</span>
@@ -259,7 +245,6 @@
     </ul>
   </section>
 
-  <!-- ============ КОНТАКТЫ ============ -->
   <section class="contact section" id="contact">
     <span class="tag">04 — контакты</span>
     <h2 class="contact__title" data-split="chars">
