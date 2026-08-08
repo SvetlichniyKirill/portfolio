@@ -1,0 +1,520 @@
+/* ============================================================
+   layout.css — шапка, секции, сетки
+   ============================================================ */
+
+.section {
+  position: relative;
+  padding: var(--pad-y) var(--pad-x);
+}
+
+.section__head { margin-bottom: clamp(2rem, 5vw, 5rem); }
+
+.section__title {
+  margin-top: 1rem;
+  font-size: clamp(2rem, 5.5vw, 4.5rem);
+}
+
+/* ============ Шапка ============ */
+.header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap);
+  padding: 1.25rem var(--pad-x);
+  mix-blend-mode: difference;   /* читается и на светлом, и на тёмном */
+  pointer-events: none;
+}
+.header > * { pointer-events: auto; }
+
+.header__logo {
+  display: flex;
+  align-items: baseline;
+  gap: .25rem;
+  font-family: var(--mono);
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: .1em;
+}
+.header__logo-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--acc);
+}
+
+.header__nav {
+  display: flex;
+  gap: clamp(1rem, 2.5vw, 2.5rem);
+  font-size: .875rem;
+}
+
+.header__meta {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  font-family: var(--mono);
+  font-size: .72rem;
+  letter-spacing: .08em;
+  color: var(--muted);
+}
+.header__status { display: flex; align-items: center; gap: .45rem; }
+.header__status i {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--acc);
+  animation: pulse 2s var(--ease) infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%      { opacity: .35; transform: scale(.7); }
+}
+
+@media (max-width: 860px) {
+  .header__nav { display: none; }
+  .header__meta .header__status { display: none; }
+}
+
+/* ============ Герой ============ */
+.hero {
+  position: relative;
+  min-height: 100svh;
+  /* Статичный градиент под канвасом: виден в первые миллисекунды до
+     первого кадра WebGL и остаётся единственным фоном там, где
+     шейдеры выключены (reduced-motion, старое железо). */
+  background:
+    radial-gradient(80% 60% at 72% 28%, rgba(107, 75, 255, .30), transparent 65%),
+    radial-gradient(60% 50% at 20% 75%, rgba(200, 255, 47, .06), transparent 70%);
+  display: flex;
+  align-items: flex-end;
+  padding: 0 var(--pad-x) clamp(2rem, 6vh, 4rem);
+  overflow: hidden;
+}
+
+/* WebGL-канвас лежит фоном на всю секцию */
+.hero__gl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* Вуаль: гасит низ канваса, чтобы текст читался поверх любого кадра.
+   Центр радиального совпадает с композиционной точкой блоба (66%/30%),
+   а линейный градиент идёт тремя стопами: под заголовком фон полностью
+   плотный, в середине полупрозрачный, у блоба чистый. Один резкий стоп
+   давал бы видимую линию поперёк экрана. */
+.hero__veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(115% 85% at 72% 24%, transparent 38%, var(--bg) 100%),
+    /* Стопы подобраны по замеру, а не на глаз. Заголовок в одну строку
+       занимает 62–84% высоты (15–38% снизу), а габарит блоба кончается
+       на 49% высоты — пересечения нет, и держать плотную вуаль в середине
+       кадра больше не нужно. Ramp сдвинут под текст: там 0.74–0.99,
+       а блоб выше 34% высоты открыт почти полностью. */
+    linear-gradient(to top,
+      var(--bg) 12%,
+      rgba(8, 7, 10, .85) 34%,
+      rgba(8, 7, 10, .35) 52%,
+      transparent 66%);
+  pointer-events: none;
+}
+
+.hero__content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+.hero__eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1.5rem;
+  margin-bottom: clamp(1rem, 3vh, 2rem);
+  font-family: var(--mono);
+  font-size: .75rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+/* Заголовок в одну короткую строку, поэтому кегль можно поднять до 12vw.
+   Верхняя граница 11rem и нижняя 3rem держат его в одной строке на всех
+   ширинах: перенос внутри маски split-line дал бы кашу. */
+.hero__title {
+  /* Минимум 2.6rem, а не 3rem: на 320px ширина падает до 280px, и при
+     48px «Делаю сайты» вылезало за padding — clamp ниже 3rem не опускался. */
+  font-size: clamp(2.6rem, 12vw, 11rem);
+  /* Страховка легибельности: крупный текст всё равно частично идёт
+     поверх блоба, а мягкая тёмная подложка гарантирует контраст
+     независимо от того, какой кадр шейдера окажется под буквами. */
+  text-shadow: 0 2px 44px rgba(8, 7, 10, .6);
+}
+.hero__title .line { display: block; }
+
+.hero__foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--gap);
+  margin-top: clamp(1.5rem, 5vh, 3.5rem);
+}
+
+.hero__lead {
+  max-width: 34ch;
+  color: var(--muted);
+  font-size: clamp(.95rem, .9rem + .3vw, 1.05rem);
+}
+
+.hero__scroll {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-shrink: 0;
+  font-family: var(--mono);
+  font-size: .7rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.hero__scroll svg { width: 18px; height: 30px; }
+.hero__scroll-dot { animation: scrollDot 2.2s var(--ease) infinite; }
+@keyframes scrollDot {
+  0%        { transform: translateY(0);    opacity: 1; }
+  55%, 100% { transform: translateY(18px); opacity: 0; }
+}
+
+@media (max-width: 700px) {
+  .hero__foot { flex-direction: column; align-items: flex-start; }
+}
+
+/* ============ Бегущая строка ============ */
+.marquee {
+  position: relative;
+  z-index: 2;
+  padding: clamp(1rem, 2vw, 1.75rem) 0;
+  border-block: 1px solid var(--line);
+  background: var(--bg);
+  overflow: hidden;
+}
+.marquee__track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+.marquee__group {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  padding-right: clamp(1.5rem, 4vw, 3.5rem);
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  font-weight: 600;
+  letter-spacing: -.02em;
+  white-space: nowrap;
+}
+.marquee__group i { color: var(--acc); font-style: normal; font-size: .5em; }
+
+/* ============ Обо мне ============ */
+.about__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+
+.about__sticky { position: sticky; top: 18vh; }
+
+.about__portrait {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--bg-2);
+}
+.about__gl { width: 100%; height: 100%; }
+.about__portrait-label {
+  position: absolute;
+  bottom: 1rem; left: 1rem;
+  font-family: var(--mono);
+  font-size: .7rem;
+  letter-spacing: .14em;
+  color: var(--fg);
+  mix-blend-mode: difference;
+}
+
+.about__text { display: grid; gap: clamp(1.5rem, 4vh, 3rem); }
+
+/* Крупный «читаемый по скроллу» абзац: слова проявляются по одному */
+.scrub-text {
+  font-size: clamp(1.25rem, 1rem + 1.4vw, 2.15rem);
+  line-height: 1.28;
+  letter-spacing: -.02em;
+  font-weight: 500;
+  text-wrap: pretty;
+}
+.scrub-text .word { display: inline-block; }
+
+.about__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1.5rem, 4vw, 4rem);
+  margin-top: 1rem;
+  padding-top: clamp(1.5rem, 4vh, 2.5rem);
+  border-top: 1px solid var(--line);
+}
+.about__facts li { display: grid; gap: .25rem; }
+.about__facts b {
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 600;
+  letter-spacing: -.04em;
+  line-height: 1;
+  color: var(--acc);
+}
+.about__facts span {
+  font-family: var(--mono);
+  font-size: .72rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+@media (max-width: 860px) {
+  .about__grid { grid-template-columns: 1fr; }
+  .about__sticky { position: static; }
+  .about__portrait { max-width: 22rem; }
+}
+
+/* ============ Работы: горизонтальный скролл ============ */
+.works {
+  position: relative;
+  padding-block: var(--pad-y) 0;
+}
+
+/* Для пиннинга секция должна быть ровно в экран: ScrollTrigger
+   фиксирует её целиком, и любая лишняя высота даёт «прыжок» на входе. */
+@media (min-width: 861px) and (hover: hover) {
+  .works {
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: 0;
+  }
+}
+
+.works__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gap);
+  padding: 0 var(--pad-x) clamp(2rem, 5vh, 3.5rem);
+}
+.works__hint {
+  font-family: var(--mono);
+  font-size: .8rem;
+  letter-spacing: .1em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Вьюпорт пиннится, а трек внутри едет по X — классическая связка */
+.works__viewport { overflow: hidden; }
+
+.works__track {
+  display: flex;
+  gap: clamp(1.5rem, 4vw, 4rem);
+  padding-inline: var(--pad-x);
+  width: max-content;
+  will-change: transform;
+}
+
+/* Третье ограничение — по высоте экрана. Карточка = обложка 4:3 плюс
+   текст, и на низком ноутбуке без vh-потолка она вылезает за пределы
+   запиненной секции. */
+.work {
+  flex: 0 0 auto;
+  width: min(80vw, 40rem, 78vh);
+  display: grid;
+  gap: 1.25rem;
+}
+
+.work__media {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--bg-2);
+}
+.work__gl { width: 100%; height: 100%; }
+
+.work__media--empty {
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--line);
+  background: transparent;
+}
+.work__next-mark {
+  font-size: clamp(4rem, 12vw, 9rem);
+  font-weight: 600;
+  letter-spacing: -.05em;
+  color: var(--line);
+}
+
+.work__info { display: grid; gap: .6rem; }
+
+.work__title {
+  font-size: clamp(1.35rem, 2.2vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -.03em;
+}
+.work__desc { max-width: 42ch; color: var(--muted); font-size: .95rem; }
+
+.work__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: .35rem;
+}
+.work__tags li {
+  padding: .28rem .6rem;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  font-family: var(--mono);
+  font-size: .68rem;
+  letter-spacing: .06em;
+  color: var(--muted);
+}
+
+/* На тач-устройствах пиннинг заменяем нативным свайпом:
+   надёжнее, привычнее и не ломает адресную строку браузера. */
+@media (max-width: 860px), (hover: none) {
+  .works__viewport {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .works__viewport::-webkit-scrollbar { display: none; }
+  .works__track { transform: none !important; }
+  .work { scroll-snap-align: center; width: 82vw; }
+}
+
+/* ============ Стек: строки-таблица ============ */
+.rows { border-top: 1px solid var(--line); }
+
+.row {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 5fr) minmax(0, 7fr) auto;
+  align-items: center;
+  gap: var(--gap);
+  padding: clamp(1.1rem, 2.5vh, 1.8rem) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Сдвигаем ЯЧЕЙКИ трансформом, а не строку паддингом.
+   padding-left у грида с fr-колонками менял бы их ширину, и описание
+   перевёрстывалось бы на каждом наведении — заметный дребезг.
+   transform не влияет на раскладку вообще. */
+.row > * {
+  transition: transform .55s var(--ease), color .4s var(--ease),
+              border-color .4s var(--ease);
+}
+.row:hover > * { transform: translateX(.75rem); }
+.row:hover .row__name { color: var(--acc); }
+.row:hover .row__tech { border-color: var(--acc); color: var(--acc); }
+
+.row__num, .row__tech {
+  font-family: var(--mono);
+  font-size: .72rem;
+  letter-spacing: .1em;
+  color: var(--muted);
+}
+.row__name {
+  font-size: clamp(1.05rem, 1.6vw, 1.5rem);
+  font-weight: 500;
+  letter-spacing: -.02em;
+}
+.row__desc { color: var(--muted); font-size: .9rem; }
+.row__tech {
+  padding: .3rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+}
+
+@media (max-width: 860px) {
+  .row { grid-template-columns: 2.5rem 1fr; row-gap: .4rem; }
+  .row__desc { grid-column: 2; }
+  .row__tech { grid-column: 2; justify-self: start; }
+}
+
+/* ============ Контакты ============ */
+.contact {
+  display: grid;
+  gap: clamp(1.5rem, 4vh, 3rem);
+  justify-items: start;
+  text-align: left;
+}
+
+.contact__title { font-size: clamp(2.2rem, 8vw, 7rem); }
+.contact__title .line { display: block; }
+
+/* Телефон и почта стоят парой, поэтому у них свой контейнер с плотным
+   шагом: gap самой секции (36px) разрывал бы их на два отдельных блока. */
+.contact__direct {
+  display: grid;
+  gap: .35rem;
+  justify-items: start;
+}
+
+.contact__mail {
+  position: relative;
+  display: inline-block;
+  font-size: clamp(1rem, 3.2vw, 2.4rem);
+  font-weight: 500;
+  letter-spacing: -.02em;
+  word-break: break-word;
+}
+/* Подчёркивание, растущее от левого края */
+.contact__mail::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: -.1em;
+  width: 100%; height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .6s var(--ease);
+}
+.contact__mail:hover::after { transform: scaleX(1); }
+
+.contact__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  font-family: var(--mono);
+  font-size: .8rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+/* ============ Подвал ============ */
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 2rem var(--pad-x);
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: .72rem;
+  letter-spacing: .08em;
+  color: var(--muted);
+}
+.footer__mid { text-align: center; }
+@media (max-width: 700px) { .footer__mid { display: none; } }
