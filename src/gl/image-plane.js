@@ -28,14 +28,17 @@ uniform float uVel;
 varying vec2 vUv;
 
 void main() {
-  // cover-подгонка, чтобы картинку не растянуло
+  // cover-подгонка, чтобы картинку не растянуло.
+  // по вертикали прижимаем к верху: у скриншота сайта смысл в шапке,
+  // а не в середине. на горизонтальных картинках ratio.y = 1 и это ни на
+  // что не влияет, работает только когда картинка выше кадра
   vec2 ratio = vec2(
     min((uRes.x / uRes.y) / (uSize.x / uSize.y), 1.0),
     min((uRes.y / uRes.x) / (uSize.y / uSize.x), 1.0)
   );
   vec2 uv = vec2(
     vUv.x * ratio.x + (1.0 - ratio.x) * 0.5,
-    vUv.y * ratio.y + (1.0 - ratio.y) * 0.5
+    vUv.y * ratio.y + (1.0 - ratio.y) * 1.0
   );
 
   uv.x += sin(uv.y * 6.0 + uTime * 0.5) * 0.0035;
