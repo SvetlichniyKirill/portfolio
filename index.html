@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Кирилл Светличный — делаю сайты</title>
+<meta name="description" content="Визитки, лендинги и телеграм-боты. Сделаю страницу, подключу заявки и выложу в интернет.">
+<meta name="theme-color" content="#08070a">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Playfair+Display:ital@1&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/layout.css">
+<link rel="stylesheet" href="styles/components.css">
+
+<!-- Карта импортов: подменяет сборщик. Код ниже пишется так же, как под Vite
+     (import gsap from 'gsap'), но модули приходят с CDN.
+     Переход на Vite = удалить этот блок + npm install gsap lenis ogl. -->
+<script type="importmap">
+{
+  "imports": {
+    "gsap": "https://esm.sh/gsap@3.12.5",
+    "gsap/ScrollTrigger": "https://esm.sh/gsap@3.12.5/ScrollTrigger",
+    "lenis": "https://esm.sh/lenis@1.1.18",
+    "ogl": "https://esm.sh/ogl@1.0.11"
+  }
+}
+</script>
+<script type="module" src="src/main.js"></script>
+</head>
+
+<body class="is-loading">
+
+<!-- ============ Прелоадер ============ -->
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="preloader__inner">
+    <span class="preloader__label">загрузка</span>
+    <span class="preloader__count" id="preloader-count">0</span>
+  </div>
+  <div class="preloader__bar"><i id="preloader-bar"></i></div>
+</div>
+
+<!-- ============ Занавес для интро ============ -->
+<div class="curtain" id="curtain" aria-hidden="true">
+  <i></i><i></i><i></i><i></i><i></i>
+</div>
+
+<!-- ============ Глобальные слои ============ -->
+<div class="grain" aria-hidden="true"></div>
+<div class="progress" aria-hidden="true"><i id="progress-bar"></i></div>
+<div class="cursor" id="cursor" aria-hidden="true">
+  <div class="cursor__ring" id="cursor-ring"><span id="cursor-text"></span></div>
+  <div class="cursor__dot" id="cursor-dot"></div>
+</div>
+
+<!-- ============ Шапка ============ -->
+<header class="header" id="header">
+  <a class="header__logo" href="#top" data-cursor="link">
+    КС<span class="header__logo-dot"></span>
+  </a>
+  <nav class="header__nav">
+    <a href="#works" data-cursor="link"><span>работы</span></a>
+    <a href="#about" data-cursor="link"><span>что делаю</span></a>
+    <a href="#contact" data-cursor="link"><span>контакты</span></a>
+  </nav>
+  <div class="header__meta">
+    <span id="clock">--:--:--</span>
+    <span class="header__status"><i></i> можно написать</span>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ ГЕРОЙ ============ -->
+  <section class="hero" id="hero">
+    <canvas class="hero__gl" id="hero-gl" aria-hidden="true"></canvas>
+    <div class="hero__veil" aria-hidden="true"></div>
+
+    <div class="hero__content">
+      <p class="hero__eyebrow" data-intro="fade">
+        <span>Кирилл Светличный</span>
+        <span class="dim">визитки · лендинги · телеграм-боты</span>
+      </p>
+
+      <h1 class="hero__title" data-split="chars">
+        <span class="line">Делаю <em>сайты</em></span>
+      </h1>
+
+      <div class="hero__foot">
+        <p class="hero__lead" data-intro="fade">
+          Сделаю страницу, подключу заявки и выложу в интернет.
+          Напишите — прикину сроки.
+        </p>
+        <a class="hero__scroll" href="#about" data-cursor="link" data-intro="fade">
+          <span>листайте</span>
+          <svg viewBox="0 0 24 40" aria-hidden="true">
+            <rect x="1" y="1" width="22" height="38" rx="11" fill="none" stroke="currentColor" stroke-opacity=".35"/>
+            <circle class="hero__scroll-dot" cx="12" cy="11" r="3" fill="currentColor"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ БЕГУЩАЯ СТРОКА ============ -->
+  <section class="marquee" id="marquee" aria-hidden="true">
+    <div class="marquee__track" id="marquee-track">
+      <div class="marquee__group">
+        <span>визитки</span><i>✦</i><span>лендинги</span><i>✦</i><span>телеграм-боты</span><i>✦</i>
+        <span>формы заявок</span><i>✦</i><span>адаптив под телефон</span><i>✦</i>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ОБО МНЕ ============ -->
+  <section class="about section" id="about">
+    <div class="section__head">
+      <span class="tag">01 — что делаю</span>
+    </div>
+
+    <div class="about__grid">
+      <div class="about__sticky">
+        <div class="about__portrait" data-parallax="40">
+          <canvas class="about__gl" data-gl-noise aria-hidden="true"></canvas>
+          <span class="about__portrait-label">KS / 2026</span>
+        </div>
+      </div>
+
+      <div class="about__text">
+        <p class="scrub-text" data-reveal="words">
+          Делаю простые и понятные сайты: визитку мастера,
+          лендинг заведения, страницу с услугами и ценами.
+          Код свой, без конструкторов — поэтому потом легко поправить.
+        </p>
+        <p class="scrub-text" data-reveal="words">
+          Подключу форму заявки в телеграм, соберу бота для заказов,
+          настрою так, чтобы всё удобно открывалось с телефона.
+          Нужно что-то поменять — пишите, поправлю.
+        </p>
+
+        <!-- group, а не reveal на каждом li: элементы стоят в строку и
+             сработали бы одновременно, то есть без стаггера вообще -->
+        <ul class="about__facts" data-reveal="group">
+          <li><b>3</b><span>проекта сделано</span></li>
+          <li><b>2</b><span>сайта уже работают</span></li>
+          <li><b>0</b><span>конструкторов</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ РАБОТЫ (горизонтальный скролл) ============ -->
+  <section class="works" id="works">
+    <div class="works__head">
+      <span class="tag">02 — работы</span>
+      <span class="works__hint" id="works-hint">01 / 04</span>
+    </div>
+
+    <div class="works__viewport">
+      <div class="works__track" id="works-track">
+
+        <article class="work" data-cursor="view" data-hue="88">
+          <a class="work__media" href="https://master-site.onrender.com/" target="_blank" rel="noopener">
+            <canvas class="work__gl" data-gl-work aria-hidden="true"></canvas>
+          </a>
+          <div class="work__info">
+            <h3 class="work__title">Сайт мастера маникюра</h3>
+            <p class="work__desc">Услуги, цены, галерея работ. Клиент оставляет заявку — она сразу приходит в телеграм.</p>
+            <ul class="work__tags"><li>HTML/CSS</li><li>JS</li><li>Flask</li><li>Render</li></ul>
+          </div>
+        </article>
+
+        <article class="work" data-cursor="view" data-hue="26">
+          <a class="work__media" href="https://svetlichniykirill.github.io/coffee-landing/" target="_blank" rel="noopener">
+            <canvas class="work__gl" data-gl-work aria-hidden="true"></canvas>
+          </a>
+          <div class="work__info">
+            <h3 class="work__title">Кофейня «Тёплый угол»</h3>
+            <p class="work__desc">Меню, отзывы, адрес и часы работы. Одинаково открывается с компьютера и с телефона.</p>
+            <ul class="work__tags"><li>HTML/CSS</li><li>Grid</li><li>адаптив</li></ul>
+          </div>
+        </article>
+
+        <!-- У бота нет веб-страницы, поэтому обложка не ссылка и курсор не
+             обещает переход. Раньше здесь стоял href="#works" — клик
+             «срабатывал», но никуда не вёл, и это читалось как поломка. -->
+        <article class="work" data-hue="265">
+          <div class="work__media">
+            <canvas class="work__gl" data-gl-work aria-hidden="true"></canvas>
+          </div>
+          <div class="work__info">
+            <h3 class="work__title">Телеграм-бот кофейни</h3>
+            <p class="work__desc">Принимает заказы: меню, корзина, уведомление владельцу. Работает в телеграме, своей страницы нет.</p>
+            <ul class="work__tags"><li>Python</li><li>aiogram</li><li>SQLite</li></ul>
+          </div>
+        </article>
+
+        <article class="work work--next" data-cursor="link">
+          <div class="work__media work__media--empty">
+            <span class="work__next-mark">04</span>
+          </div>
+          <div class="work__info">
+            <h3 class="work__title">Ваш проект</h3>
+            <p class="work__desc">Здесь может быть ваш сайт. Напишите, что нужно — предложу, как сделать.</p>
+            <a class="btn" href="#contact" data-magnet data-cursor="link"><span>Написать</span></a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ СТЕК ============ -->
+  <section class="stack section" id="stack">
+    <div class="section__head">
+      <span class="tag">03 — как это сделано</span>
+      <h2 class="section__title" data-split="lines">Что здесь<br>работает</h2>
+    </div>
+
+    <ul class="rows">
+      <li class="row" data-reveal data-cursor="link">
+        <span class="row__num">01</span>
+        <span class="row__name">Плавная прокрутка</span>
+        <span class="row__desc">Страница листается мягко, с небольшой инерцией</span>
+        <span class="row__tech">lenis</span>
+      </li>
+      <li class="row" data-reveal data-cursor="link">
+        <span class="row__num">02</span>
+        <span class="row__name">Движение от прокрутки</span>
+        <span class="row__desc">Блок с работами едет в сторону, пока вы листаете вниз</span>
+        <span class="row__tech">gsap</span>
+      </li>
+      <li class="row" data-reveal data-cursor="link">
+        <span class="row__num">03</span>
+        <span class="row__name">Текст по буквам</span>
+        <span class="row__desc">Заголовок собирается из отдельных букв, а не просто появляется</span>
+        <span class="row__tech">gsap</span>
+      </li>
+      <li class="row" data-reveal data-cursor="link">
+        <span class="row__num">04</span>
+        <span class="row__name">Фигура в шапке</span>
+        <span class="row__desc">Объёмная капля, которая тянется за курсором</span>
+        <span class="row__tech">webgl</span>
+      </li>
+      <li class="row" data-reveal data-cursor="link">
+        <span class="row__num">05</span>
+        <span class="row__name">Живые обложки</span>
+        <span class="row__desc">Картинки работ слегка плывут, когда наводишь мышь</span>
+        <span class="row__tech">webgl</span>
+      </li>
+      <li class="row" data-reveal data-cursor="link">
+        <span class="row__num">06</span>
+        <span class="row__name">Свой курсор</span>
+        <span class="row__desc">Кружок вместо стрелки, кнопки к нему притягиваются</span>
+        <span class="row__tech">css</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ============ КОНТАКТЫ ============ -->
+  <section class="contact section" id="contact">
+    <span class="tag">04 — контакты</span>
+    <h2 class="contact__title" data-split="chars">
+      <span class="line">Нужен сайт?</span>
+      <span class="line"><em>Напишите</em></span>
+    </h2>
+
+    <div class="contact__direct">
+      <a class="contact__mail" href="tel:+79241602020" data-magnet data-cursor="link">
+        <span class="contact__mail-text">+7 924 160-20-20</span>
+      </a>
+      <a class="contact__mail" href="mailto:awesomenesstrue80@gmail.com" data-magnet data-cursor="link">
+        <span class="contact__mail-text">awesomenesstrue80@gmail.com</span>
+      </a>
+    </div>
+
+    <div class="contact__links">
+      <a href="https://github.com/SvetlichniyKirill" target="_blank" rel="noopener" data-cursor="link"><span>GitHub</span></a>
+      <a href="https://master-site.onrender.com/" target="_blank" rel="noopener" data-cursor="link"><span>Сайт мастера</span></a>
+      <a href="https://svetlichniykirill.github.io/coffee-landing/" target="_blank" rel="noopener" data-cursor="link"><span>Лендинг кофейни</span></a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <span>© <span id="year">2026</span> Кирилл Светличный</span>
+  <span class="footer__mid">сделано руками</span>
+  <a href="#top" data-cursor="link"><span>наверх ↑</span></a>
+</footer>
+
+<noscript>
+  <style>.preloader,.curtain{display:none}body{opacity:1}</style>
+  <p style="padding:2rem;text-align:center">Для анимаций нужен JavaScript — но контент читается и без него.</p>
+</noscript>
+
+</body>
+</html>
